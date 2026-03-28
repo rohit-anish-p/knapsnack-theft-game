@@ -516,6 +516,23 @@
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
 
+  /* ── WATERMARK ── */
+  .watermark {
+    text-align: center;
+    padding: 10px 0 0;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.55;
+  }
+
+  .watermark span {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .dashboard { grid-template-columns: 1fr; }
@@ -535,6 +552,7 @@
       <div class="title-glow">Knapsack Quest</div>
     </div>
     <p class="subtitle">Dynamic Programming · Shopping Simulation</p>
+    <p class="watermark">Made by <span>Rohit Anish</span> &nbsp;·&nbsp; <span>&</span> &nbsp;·&nbsp; <span>Raghav</span></p>
     <div class="how-to-play">
       🎮 You have <strong>25 Points</strong> to spend. Click items to add them to your cart.
       Your goal: pick the best combination to <strong>maximize Selling Value</strong> within your budget.
