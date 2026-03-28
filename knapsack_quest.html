@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knapsack Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050d1a;
+    --surface: #0a1628;
+    --card: #0d1f3c;
+    --card-hover: #112544;
+    --selected: #0c2a5e;
+    --border: #1a3a6e;
+    --border-glow: #2563eb;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent-glow: rgba(59,130,246,0.3);
+    --gold: #f59e0b;
+    --gold-glow: rgba(245,158,11,0.3);
+    --red: #ef4444;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --text-dim: #64748b;
+    --text-bright: #f8fafc;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(ellipse, rgba(37,99,235,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(5%, 8%); }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+
+  .title-wrap {
+    display: inline-block;
+    position: relative;
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 40%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .title-glow {
+    position: absolute;
+    inset: 0;
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(96,165,250,0.15);
+    filter: blur(8px);
+    z-index: -1;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--accent2);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  .how-to-play {
+    margin: 20px auto 0;
+    max-width: 680px;
+    background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(6,182,212,0.08));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  .how-to-play strong { color: var(--accent2); }
+
+  /* ── DASHBOARD ── */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .stat-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-bright);
+    transition: color 0.3s;
+  }
+
+  .stat-card.danger .stat-value { color: var(--red); }
+  .stat-card.warning .stat-value { color: var(--gold); }
+
+  .stat-sub {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+    width: 0%;
+  }
+
+  .progress-fill.danger { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+
+  /* ── ITEM GRID ── */
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .item-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .item-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-glow);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .item-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(59,130,246,0.15);
+  }
+
+  .item-card:hover::before { opacity: 1; }
+
+  .item-card.selected {
+    border-color: var(--accent);
+    background: var(--selected);
+    box-shadow: 0 0 20px rgba(59,130,246,0.2), inset 0 0 20px rgba(59,130,246,0.05);
+  }
+
+  .item-card.selected::before { opacity: 1; }
+
+  .item-card.disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .item-card.shake {
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .item-emoji {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .item-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .item-stats {
+    display: flex;
+    gap: 8px;
+  }
+
+  .stat-badge {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 7px 6px;
+    text-align: center;
+  }
+
+  .stat-badge .label {
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .stat-badge .val {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .stat-badge.cost .val { color: #f87171; }
+  .stat-badge.profit .val { color: #4ade80; }
+
+  .selected-tag {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: var(--accent);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 99px;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .item-card.selected .selected-tag {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ── ALERT ── */
+  .alert-bar {
+    background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08));
+    border: 1px solid rgba(239,68,68,0.4);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+    font-size: 0.92rem;
+    color: #fca5a5;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .alert-bar.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── ACTIONS ── */
+  .actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #2563eb, #0284c7);
+    color: white;
+    box-shadow: 0 4px 24px rgba(37,99,235,0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(37,99,235,0.5);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  /* ── RESULT CARD ── */
+  .result-card {
+    border-radius: 16px;
+    padding: 28px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: none;
+    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.88); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .result-card.optimal {
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.08));
+    border: 1px solid rgba(16,185,129,0.5);
+    display: block;
+  }
+
+  .result-card.sub-optimal {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.06));
+    border: 1px solid rgba(245,158,11,0.4);
+    display: block;
+  }
+
+  .result-icon { font-size: 2.8rem; margin-bottom: 12px; }
+
+  .result-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .result-card.optimal .result-title { color: #34d399; }
+  .result-card.sub-optimal .result-title { color: var(--gold); }
+
+  .result-detail {
+    font-size: 1rem;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  .result-detail span {
+    color: var(--text-bright);
+    font-weight: 600;
+  }
+
+  .optimal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 99px;
+    padding: 6px 16px;
+    font-size: 0.82rem;
+    color: #34d399;
+    letter-spacing: 1px;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+
+  /* Confetti */
+  .confetti-wrap {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .dashboard { grid-template-columns: 1fr; }
+    .items-grid { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="title-wrap">
+      <h1>Knapsack Quest</h1>
+      <div class="title-glow">Knapsack Quest</div>
+    </div>
+    <p class="subtitle">Dynamic Programming · Shopping Simulation</p>
+    <div class="how-to-play">
+      🎮 You have <strong>25 Points</strong> to spend. Click items to add them to your cart.
+      Your goal: pick the best combination to <strong>maximize Selling Value</strong> within your budget.
+      Hit <strong>Submit</strong> to see if you found the optimal solution!
+    </div>
+  </header>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+    <div class="stat-card" id="pointsCard">
+      <div class="stat-label">⚡ Points Used</div>
+      <div class="stat-value" id="pointsUsed">0</div>
+      <div class="stat-sub">out of 25 available</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">💰 Total Potential Profit</div>
+      <div class="stat-value" id="profitValue" style="color: #4ade80;">0</div>
+      <div class="stat-sub">selling value of selected items</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="profitFill" style="background: linear-gradient(90deg,#22c55e,#86efac);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERT -->
+  <div class="alert-bar" id="alertBar">⚠️ Not enough points! Remove an item first.</div>
+
+  <!-- ITEMS -->
+  <div class="section-title">Market Items — Select Your Portfolio</div>
+  <div class="items-grid" id="itemsGrid"></div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitCart()">▶ Submit &amp; Check Solution</button>
+    <button class="btn btn-secondary" onclick="resetCart()">↺ Reset Cart</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="resultCard">
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <p class="result-detail" id="resultDetail"></p>
+    <div id="optimalBadge"></div>
+  </div>
+
+</div>
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script>
+// ─────────────────────────────────────────
+//  ITEMS DATA
+// ─────────────────────────────────────────
+const CAPACITY = 25;
+
+const items = [
+  { id: 0, name: "Quantum Chip",  emoji: "💠", weight: 3,  value: 8  },
+  { id: 1, name: "NanoCore",     emoji: "🔬", weight: 6,  value: 14 },
+  { id: 2, name: "Photon Cell",  emoji: "⚡", weight: 2,  value: 5  },
+  { id: 3, name: "CryptoGem",   emoji: "💎", weight: 5,  value: 12 },
+  { id: 4, name: "Data Vault",   emoji: "🗄️", weight: 8,  value: 18 },
+  { id: 5, name: "Ion Shield",   emoji: "🛡️", weight: 4,  value: 9  },
+  { id: 6, name: "BioSensor",    emoji: "🧬", weight: 7,  value: 15 },
+  { id: 7, name: "StarMap",      emoji: "🌌", weight: 1,  value: 3  },
+  { id: 8, name: "Plasma Core",  emoji: "🔴", weight: 9,  value: 20 },
+  { id: 9, name: "Holo Lens",    emoji: "🥽", weight: 6,  value: 13 },
+];
+
+// Track selected state
+const selected = new Array(items.length).fill(false);
+
+// ─────────────────────────────────────────
+//  KNAPSACK DP ALGORITHM
+// ─────────────────────────────────────────
+/*
+  Standard 0/1 Knapsack using Dynamic Programming.
+  
+  dp[i][w] = max profit using the first i items with capacity w.
+  
+  Recurrence:
+    If item i doesn't fit:  dp[i][w] = dp[i-1][w]
+    If item i fits:         dp[i][w] = max(dp[i-1][w], dp[i-1][w - weight[i]] + value[i])
+  
+  Time:  O(n × W)
+  Space: O(n × W)  — here 10 × 25 = 250 cells
+*/
+function knapsack(items, capacity) {
+  const n = items.length;
+  // Build (n+1) × (capacity+1) table, filled with 0
+  const dp = Array.from({ length: n + 1 }, () => new Array(capacity + 1).fill(0));
+
+  for (let i = 1; i <= n; i++) {
+    const { weight, value } = items[i - 1];
+    for (let w = 0; w <= capacity; w++) {
+      // Option A: skip item i
+      dp[i][w] = dp[i - 1][w];
+      // Option B: take item i (only if it fits)
+      if (weight <= w) {
+        const withItem = dp[i - 1][w - weight] + value;
+        if (withItem > dp[i][w]) dp[i][w] = withItem;
+      }
+    }
+  }
+
+  // Maximum profit is at dp[n][capacity]
+  return dp[n][capacity];
+}
+
+// ─────────────────────────────────────────
+//  DOM RENDERING
+// ─────────────────────────────────────────
+function renderGrid() {
+  const grid = document.getElementById('itemsGrid');
+  grid.innerHTML = '';
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'item-card' + (selected[item.id] ? ' selected' : '');
+    card.id = `card-${item.id}`;
+    card.innerHTML = `
+      <span class="item-emoji">${item.emoji}</span>
+      <div class="item-name">${item.name}</div>
+      <div class="item-stats">
+        <div class="stat-badge cost">
+          <span class="label">Buy</span>
+          <span class="val">${item.weight}</span>
+        </div>
+        <div class="stat-badge profit">
+          <span class="label">Sell</span>
+          <span class="val">${item.value}</span>
+        </div>
+      </div>
+      <div class="selected-tag">✓ IN CART</div>
+    `;
+    card.addEventListener('click', () => toggleItem(item.id));
+    grid.appendChild(card);
+  });
+  updateDisabledState();
+}
+
+function updateDashboard() {
+  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
+  const totalProfit = items.reduce((s, it) => s + (selected[it.id] ? it.value : 0), 0);
+  const maxProfit   = items.reduce((s, it) => s + it.value, 0); // for bar scaling
+
+  document.getElementById('pointsUsed').textContent = totalWeight;
+  document.getElementById('profitValue').textContent = totalProfit;
+
+  const pct = Math.min(100, (totalWeight / CAPACITY) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  const card = document.getElementById('pointsCard');
+  const fill  = document.getElementById('progressFill');
+  if (pct >= 100) { card.classList.add('danger'); fill.classList.add('danger'); }
+  else if (pct >= 75) { card.classList.add('warning'); card.classList.remove('danger'); fill.classList.remove('danger'); }
+  else { card.classList.remove('danger', 'warning'); fill.classList.remove('danger'); }
+
+  const profitPct = Math.min(100, (totalProfit / maxProfit) * 100);
+  document.getElementById('profitFill').style.width = profitPct + '%';
+}
+
+function updateDisabledState() {
+  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
+  items.forEach(item => {
+    const card = document.getElementById(`card-${item.id}`);
+    if (!selected[item.id] && totalWeight + item.weight > CAPACITY) {
+      card.classList.add('disabled');
+    } else {
+      card.classList.remove('disabled');
+    }
+  });
+}
+
+// ─────────────────────────────────────────
+//  INTERACTION
+// ─────────────────────────────────────────
+function toggleItem(id) {
+  hideResult();
+  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
+  const item = items[id];
+
+  if (selected[id]) {
+    // Remove
+    selected[id] = false;
+    document.getElementById(`card-${id}`).classList.remove('selected');
+  } else {
+    // Check capacity
+    if (totalWeight + item.weight > CAPACITY) {
+      showAlert();
+      const card = document.getElementById(`card-${id}`);
+      card.classList.add('shake');
+      setTimeout(() => card.classList.remove('shake'), 400);
+      return;
+    }
+    selected[id] = true;
+    document.getElementById(`card-${id}`).classList.add('selected');
+  }
+
+  updateDashboard();
+  updateDisabledState();
+  hideAlert();
+}
+
+let alertTimer;
+function showAlert() {
+  const bar = document.getElementById('alertBar');
+  bar.classList.add('show');
+  clearTimeout(alertTimer);
+  alertTimer = setTimeout(hideAlert, 2800);
+}
+
+function hideAlert() {
+  document.getElementById('alertBar').classList.remove('show');
+}
+
+function hideResult() {
+  const r = document.getElementById('resultCard');
+  r.className = 'result-card';
+  r.style.display = 'none';
+}
+
+function resetCart() {
+  selected.fill(false);
+  hideResult();
+  hideAlert();
+  renderGrid();
+  updateDashboard();
+}
+
+// ─────────────────────────────────────────
+//  SUBMIT & EVALUATE
+// ─────────────────────────────────────────
+function submitCart() {
+  const userProfit = items.reduce((s, it) => s + (selected[it.id] ? it.value : 0), 0);
+
+  if (userProfit === 0) {
+    showAlert();
+    document.getElementById('alertBar').textContent = '🛒 Select at least one item first!';
+    document.getElementById('alertBar').classList.add('show');
+    clearTimeout(alertTimer);
+    alertTimer = setTimeout(hideAlert, 2800);
+    return;
+  }
+
+  const maxProfit = knapsack(items, CAPACITY);
+  const resultCard = document.getElementById('resultCard');
+
+  if (userProfit === maxProfit) {
+    resultCard.className = 'result-card optimal';
+    resultCard.style.display = 'block';
+    document.getElementById('resultIcon').textContent = '🎉';
+    document.getElementById('resultTitle').textContent = 'You hit the Jackpot!';
+    document.getElementById('resultDetail').innerHTML =
+      `You found the <span>optimal combination</span>! Your selling value of <span>${userProfit} pts</span> matches the algorithmic maximum.`;
+    document.getElementById('optimalBadge').innerHTML =
+      `<div class="optimal-badge">✦ Perfect Score · DP Maximum = ${maxProfit} pts</div>`;
+    spawnConfetti();
+  } else {
+    resultCard.className = 'result-card sub-optimal';
+    resultCard.style.display = 'block';
+    document.getElementById('resultIcon').textContent = '🔍';
+    document.getElementById('resultTitle').textContent = 'You Can Do Better!';
+    document.getElementById('resultDetail').innerHTML =
+      `Your profit: <span>${userProfit} pts</span> &nbsp;|&nbsp; Maximum possible: <span>${maxProfit} pts</span><br>
+      You're <span>${maxProfit - userProfit} pts</span> away from the optimal solution. Keep rearranging!`;
+    document.getElementById('optimalBadge').innerHTML = '';
+  }
+}
+
+// ─────────────────────────────────────────
+//  CONFETTI
+// ─────────────────────────────────────────
+const CONFETTI_COLORS = ['#3b82f6','#06b6d4','#8b5cf6','#22c55e','#f59e0b','#f87171','#e879f9'];
+
+function spawnConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 90; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const x = Math.random() * 100;
+    const delay = Math.random() * 1.2;
+    const duration = 2 + Math.random() * 2;
+    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const size = 6 + Math.random() * 8;
+    piece.style.cssText = `
+      left: ${x}vw;
+      top: -${size}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      animation-delay: ${delay}s;
+      animation-duration: ${duration}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+    wrap.appendChild(piece);
+  }
+  setTimeout(() => wrap.innerHTML = '', 4000);
+}
+
+// ─────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────
+renderGrid();
+updateDashboard();
+</script>
+
+</body>
+</html>
