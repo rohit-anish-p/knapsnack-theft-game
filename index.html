@@ -10,17 +10,12 @@
     --bg: #050d1a;
     --surface: #0a1628;
     --card: #0d1f3c;
-    --card-hover: #112544;
     --selected: #0c2a5e;
     --border: #1a3a6e;
-    --border-glow: #2563eb;
     --accent: #3b82f6;
     --accent2: #06b6d4;
-    --accent-glow: rgba(59,130,246,0.3);
     --gold: #f59e0b;
-    --gold-glow: rgba(245,158,11,0.3);
     --red: #ef4444;
-    --green: #22c55e;
     --text: #e2e8f0;
     --text-dim: #64748b;
     --text-bright: #f8fafc;
@@ -36,249 +31,222 @@
     overflow-x: hidden;
   }
 
-  /* Animated grid background */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background-image:
       linear-gradient(rgba(37,99,235,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(37,99,235,0.04) 1px, transparent 1px);
     background-size: 50px 50px;
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
   body::after {
     content: '';
-    position: fixed;
-    top: -50%;
-    left: -20%;
-    width: 60%;
-    height: 60%;
+    position: fixed; top: -50%; left: -20%;
+    width: 60%; height: 60%;
     background: radial-gradient(ellipse, rgba(37,99,235,0.08) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
     animation: drift 8s ease-in-out infinite alternate;
   }
 
   @keyframes drift {
-    from { transform: translate(0, 0); }
-    to { transform: translate(5%, 8%); }
+    from { transform: translate(0,0); }
+    to   { transform: translate(5%,8%); }
   }
 
   .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1200px; margin: 0 auto;
     padding: 0 20px 60px;
-    position: relative;
-    z-index: 1;
+    position: relative; z-index: 1;
   }
 
   /* ── HEADER ── */
-  header {
-    text-align: center;
-    padding: 48px 20px 32px;
-    position: relative;
-  }
-
-  .title-wrap {
-    display: inline-block;
-    position: relative;
-  }
+  header { text-align: center; padding: 48px 20px 24px; }
+  .title-wrap { display: inline-block; position: relative; }
 
   h1 {
     font-family: 'Orbitron', monospace;
     font-size: clamp(2.2rem, 6vw, 4rem);
-    font-weight: 900;
-    letter-spacing: 4px;
+    font-weight: 900; letter-spacing: 4px;
     background: linear-gradient(135deg, #60a5fa 0%, #38bdf8 40%, #818cf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-transform: uppercase;
-    line-height: 1;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    text-transform: uppercase; line-height: 1;
   }
 
   .title-glow {
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     font-family: 'Orbitron', monospace;
     font-size: clamp(2.2rem, 6vw, 4rem);
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(96,165,250,0.15);
-    filter: blur(8px);
-    z-index: -1;
+    font-weight: 900; letter-spacing: 4px;
+    color: transparent; -webkit-text-stroke: 1px rgba(96,165,250,0.15);
+    filter: blur(8px); z-index: -1;
   }
 
   .subtitle {
-    font-size: 1.05rem;
-    color: var(--accent2);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 6px;
-    font-weight: 300;
+    font-size: 1.05rem; color: var(--accent2);
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-top: 6px; font-weight: 300;
   }
 
+  .watermark {
+    padding: 10px 0 0; font-size: 0.78rem;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--text-dim); opacity: 0.55;
+  }
+  .watermark span { color: var(--accent2); font-weight: 600; }
+
+  /* ── LEVEL SELECTOR ── */
+  .level-selector {
+    display: flex; gap: 12px;
+    justify-content: center; margin: 28px 0 20px; flex-wrap: wrap;
+  }
+
+  .level-btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 24px; border-radius: 10px; cursor: pointer;
+    border: 2px solid var(--border);
+    background: var(--surface); color: var(--text-dim);
+    transition: all 0.25s ease; text-align: center;
+    position: relative;
+  }
+
+  .level-btn .lv-label {
+    display: block; font-size: 0.6rem;
+    letter-spacing: 1.5px; margin-bottom: 3px; opacity: 0.7;
+  }
+
+  /* Active / hover per level (only when NOT locked) */
+  .level-btn[data-lv="1"].active,
+  .level-btn[data-lv="1"]:hover {
+    border-color: #3b82f6; color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59,130,246,0.25);
+  }
+
+  .level-btn[data-lv="2"].active,
+  .level-btn[data-lv="2"]:not(.locked):hover {
+    border-color: #a855f7; color: #a855f7;
+    box-shadow: 0 0 20px rgba(168,85,247,0.25);
+  }
+
+  .level-btn[data-lv="3"].active,
+  .level-btn[data-lv="3"]:not(.locked):hover {
+    border-color: #f59e0b; color: #f59e0b;
+    box-shadow: 0 0 20px rgba(245,158,11,0.25);
+  }
+
+  /* Locked state */
+  .level-btn.locked {
+    opacity: 0.38;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+  }
+  .level-btn.locked:hover {
+    border-color: var(--border);
+    color: var(--text-dim);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .lock-icon { font-size: 0.75rem; margin-right: 3px; }
+
+  /* Unlock animation */
+  @keyframes unlockPop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.12); }
+    70%  { transform: scale(0.96); }
+    100% { transform: scale(1); }
+  }
+  .level-btn.just-unlocked { animation: unlockPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* ── HOW TO PLAY ── */
   .how-to-play {
-    margin: 20px auto 0;
-    max-width: 680px;
-    background: linear-gradient(135deg, rgba(37,99,235,0.1), rgba(6,182,212,0.08));
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 24px;
-    font-size: 0.95rem;
-    color: #94a3b8;
-    line-height: 1.6;
+    margin: 0 auto 24px; max-width: 720px;
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 22px; font-size: 0.92rem;
+    color: #94a3b8; line-height: 1.6; transition: all 0.3s;
   }
-
   .how-to-play strong { color: var(--accent2); }
 
   /* ── DASHBOARD ── */
-  .dashboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 28px 0;
-  }
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 0 0 20px; }
 
   .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px 28px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px 26px;
+    position: relative; overflow: hidden; transition: border-color 0.3s;
   }
 
   .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
+    content: ''; position: absolute; top: 0; left: 0;
     width: 100%; height: 3px;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: background 0.4s;
   }
+  .stat-card.lv2::before { background: linear-gradient(90deg,#a855f7,#7c3aed); }
+  .stat-card.lv3::before { background: linear-gradient(90deg,#f59e0b,#ef4444); }
 
-  .stat-label {
-    font-size: 0.78rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-  }
-
-  .stat-value {
-    font-family: 'Orbitron', monospace;
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--text-bright);
-    transition: color 0.3s;
-  }
-
-  .stat-card.danger .stat-value { color: var(--red); }
+  .stat-label { font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .stat-value { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 700; color: var(--text-bright); transition: color 0.3s; }
+  .stat-card.danger .stat-value  { color: var(--red); }
   .stat-card.warning .stat-value { color: var(--gold); }
+  .stat-sub { font-size: 0.85rem; color: var(--text-dim); margin-top: 4px; }
 
-  .stat-sub {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-top: 4px;
-  }
-
-  /* Progress bar */
-  .progress-bar {
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 99px;
-    margin-top: 14px;
-    overflow: hidden;
-  }
-
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; margin-top: 14px; overflow: hidden; }
   .progress-fill {
-    height: 100%;
-    border-radius: 99px;
+    height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s;
+    transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1), background 0.3s;
     width: 0%;
   }
+  .progress-fill.danger  { background: linear-gradient(90deg,#f59e0b,#ef4444); }
+  .progress-fill.lv2fill { background: linear-gradient(90deg,#a855f7,#7c3aed); }
+  .progress-fill.lv3fill { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
 
-  .progress-fill.danger { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-family: 'Orbitron', monospace; font-size: 0.75rem;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   /* ── ITEM GRID ── */
-  .section-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-    margin-bottom: 28px;
-  }
+  .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-bottom: 28px; }
 
   .item-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px 18px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-    user-select: none;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 18px;
+    cursor: pointer; transition: all 0.25s ease;
+    position: relative; overflow: hidden; user-select: none;
   }
 
   .item-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent-glow);
-    opacity: 0;
+    content: ''; position: absolute; inset: 0;
+    background: rgba(59,130,246,0.12); opacity: 0;
     transition: opacity 0.25s;
+    pointer-events: none;
   }
 
-  .item-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(59,130,246,0.15);
-  }
-
+  .item-card:hover { transform: translateY(-3px); }
   .item-card:hover::before { opacity: 1; }
 
-  .item-card.selected {
-    border-color: var(--accent);
-    background: var(--selected);
-    box-shadow: 0 0 20px rgba(59,130,246,0.2), inset 0 0 20px rgba(59,130,246,0.05);
-  }
+  .item-card.lv1h:hover { border-color: #3b82f6; box-shadow: 0 8px 30px rgba(59,130,246,0.2); }
+  .item-card.lv2h:hover { border-color: #a855f7; box-shadow: 0 8px 30px rgba(168,85,247,0.2); }
+  .item-card.lv2h:hover::before { background: rgba(168,85,247,0.12); }
+  .item-card.lv3h:hover { border-color: #f59e0b; box-shadow: 0 8px 30px rgba(245,158,11,0.2); }
+  .item-card.lv3h:hover::before { background: rgba(245,158,11,0.1); }
 
+  .item-card.selected.lv1h { border-color: #3b82f6; background: rgba(59,130,246,0.1);  box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+  .item-card.selected.lv2h { border-color: #a855f7; background: rgba(168,85,247,0.1); box-shadow: 0 0 20px rgba(168,85,247,0.25); }
+  .item-card.selected.lv3h { border-color: #f59e0b; background: rgba(245,158,11,0.08); box-shadow: 0 0 20px rgba(245,158,11,0.2); }
   .item-card.selected::before { opacity: 1; }
 
-  .item-card.disabled {
-    opacity: 0.38;
-    cursor: not-allowed;
-    transform: none !important;
-  }
-
-  .item-card.shake {
-    animation: shake 0.4s ease;
-  }
+  .item-card.disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
+  .item-card.shake    { animation: shake 0.4s ease; }
 
   @keyframes shake {
     0%,100% { transform: translateX(0); }
@@ -288,255 +256,151 @@
     80% { transform: translateX(4px); }
   }
 
-  .item-emoji {
-    font-size: 2rem;
-    margin-bottom: 10px;
-    display: block;
-  }
-
+  .item-emoji { font-size: 2rem; margin-bottom: 10px; display: block; }
   .item-name {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-bright);
-    margin-bottom: 12px;
+    font-family: 'Orbitron', monospace; font-size: 0.68rem;
+    font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-bright); margin-bottom: 12px;
   }
 
-  .item-stats {
-    display: flex;
-    gap: 8px;
-  }
-
+  .item-stats { display: flex; gap: 8px; }
   .stat-badge {
-    flex: 1;
-    background: rgba(255,255,255,0.04);
+    flex: 1; background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 8px;
-    padding: 7px 6px;
-    text-align: center;
+    border-radius: 8px; padding: 7px 6px; text-align: center;
   }
-
-  .stat-badge .label {
-    font-size: 0.62rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .stat-badge .val {
-    font-family: 'Orbitron', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-  }
-
-  .stat-badge.cost .val { color: #f87171; }
+  .stat-badge .label { font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 2px; }
+  .stat-badge .val   { font-family: 'Orbitron', monospace; font-size: 0.95rem; font-weight: 700; }
+  .stat-badge.cost .val   { color: #f87171; }
   .stat-badge.profit .val { color: #4ade80; }
+  .stat-badge.ratio .val  { color: #fbbf24; }
+
+  /* Fraction slider */
+  .fraction-wrap { margin-top: 12px; display: none; }
+  .fraction-wrap.visible { display: block; }
+  .fraction-wrap input[type=range] { width: 100%; accent-color: #f59e0b; cursor: pointer; }
+  .fraction-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; }
+  .frac-val { color: #fbbf24; font-weight: 700; font-family: 'Orbitron', monospace; }
 
   .selected-tag {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: var(--accent);
-    color: white;
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 99px;
-    opacity: 0;
-    transform: scale(0.7);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: absolute; top: 10px; right: 10px;
+    font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 99px;
+    opacity: 0; transform: scale(0.7);
+    transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    color: white; background: #3b82f6;
   }
-
-  .item-card.selected .selected-tag {
-    opacity: 1;
-    transform: scale(1);
-  }
+  .item-card.lv2h .selected-tag { background: #a855f7; }
+  .item-card.lv3h .selected-tag { background: #f59e0b; color: #000; }
+  .item-card.selected .selected-tag { opacity: 1; transform: scale(1); }
 
   /* ── ALERT ── */
   .alert-bar {
-    background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08));
-    border: 1px solid rgba(239,68,68,0.4);
-    border-radius: 10px;
-    padding: 12px 20px;
-    text-align: center;
-    font-size: 0.92rem;
-    color: #fca5a5;
-    margin-bottom: 20px;
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    background: linear-gradient(135deg,rgba(239,68,68,0.15),rgba(239,68,68,0.08));
+    border: 1px solid rgba(239,68,68,0.4); border-radius: 10px;
+    padding: 12px 20px; text-align: center; font-size: 0.92rem; color: #fca5a5;
+    margin-bottom: 20px; opacity: 0; transform: translateY(-8px);
+    transition: all 0.3s ease; pointer-events: none; font-weight: 600;
   }
+  .alert-bar.show { opacity: 1; transform: translateY(0); }
 
-  .alert-bar.show {
-    opacity: 1;
-    transform: translateY(0);
+  /* ── UNLOCK TOAST ── */
+  .unlock-toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+    color: white; font-family: 'Orbitron', monospace;
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 2px;
+    padding: 14px 28px; border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(34,197,94,0.4);
+    z-index: 200; opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
   }
+  .unlock-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── GREEDY HINT ── */
+  .greedy-hint {
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 12px; padding: 14px 20px; margin-bottom: 20px;
+    font-size: 0.88rem; color: #fcd34d; display: none;
+  }
+  .greedy-hint.visible { display: block; }
+  .greedy-hint strong { color: #fbbf24; }
 
   /* ── ACTIONS ── */
-  .actions {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 28px;
-  }
+  .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
 
   .btn {
-    font-family: 'Orbitron', monospace;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    padding: 14px 36px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
+    font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 14px 36px; border: none; border-radius: 10px;
+    cursor: pointer; transition: all 0.25s ease;
   }
+  .btn-primary { background: linear-gradient(135deg,#2563eb,#0284c7); color: white; box-shadow: 0 4px 24px rgba(37,99,235,0.35); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(37,99,235,0.5); }
+  .btn-primary.lv2style { background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow: 0 4px 24px rgba(124,58,237,0.35); }
+  .btn-primary.lv3style { background: linear-gradient(135deg,#d97706,#f59e0b); color: #000; box-shadow: 0 4px 24px rgba(245,158,11,0.35); }
+  .btn-secondary { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
 
-  .btn-primary {
-    background: linear-gradient(135deg, #2563eb, #0284c7);
-    color: white;
-    box-shadow: 0 4px 24px rgba(37,99,235,0.35);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(37,99,235,0.5);
-  }
-
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-secondary {
-    background: transparent;
-    color: var(--text-dim);
-    border: 1px solid var(--border);
-  }
-
-  .btn-secondary:hover {
-    border-color: var(--text-dim);
-    color: var(--text);
-  }
-
-  /* ── RESULT CARD ── */
+  /* ── RESULT ── */
   .result-card {
-    border-radius: 16px;
-    padding: 28px 32px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    display: none;
-    animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-radius: 16px; padding: 28px 32px; text-align: center;
+    position: relative; overflow: hidden; display: none;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
   }
-
   @keyframes popIn {
     from { opacity: 0; transform: scale(0.88); }
-    to { opacity: 1; transform: scale(1); }
+    to   { opacity: 1; transform: scale(1); }
   }
-
   .result-card.optimal {
-    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.08));
-    border: 1px solid rgba(16,185,129,0.5);
-    display: block;
+    background: linear-gradient(135deg,rgba(16,185,129,0.15),rgba(5,150,105,0.08));
+    border: 1px solid rgba(16,185,129,0.5); display: block;
   }
-
   .result-card.sub-optimal {
-    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.06));
-    border: 1px solid rgba(245,158,11,0.4);
-    display: block;
+    background: linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.06));
+    border: 1px solid rgba(245,158,11,0.4); display: block;
   }
 
-  .result-icon { font-size: 2.8rem; margin-bottom: 12px; }
-
-  .result-title {
-    font-family: 'Orbitron', monospace;
-    font-size: 1.2rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-  }
-
-  .result-card.optimal .result-title { color: #34d399; }
+  .result-icon  { font-size: 2.8rem; margin-bottom: 12px; }
+  .result-title { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .result-card.optimal    .result-title { color: #34d399; }
   .result-card.sub-optimal .result-title { color: var(--gold); }
-
-  .result-detail {
-    font-size: 1rem;
-    color: #94a3b8;
-    line-height: 1.6;
-  }
-
-  .result-detail span {
-    color: var(--text-bright);
-    font-weight: 600;
-  }
+  .result-detail { font-size: 1rem; color: #94a3b8; line-height: 1.6; }
+  .result-detail span { color: var(--text-bright); font-weight: 600; }
 
   .optimal-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(16,185,129,0.15);
-    border: 1px solid rgba(16,185,129,0.3);
-    border-radius: 99px;
-    padding: 6px 16px;
-    font-size: 0.82rem;
-    color: #34d399;
-    letter-spacing: 1px;
-    margin-top: 12px;
-    font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 99px; padding: 6px 16px; font-size: 0.82rem;
+    color: #34d399; letter-spacing: 1px; margin-top: 12px; font-weight: 600;
   }
 
-  /* Confetti */
-  .confetti-wrap {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 99;
+  .next-level-btn {
+    display: inline-block; margin-top: 16px;
+    font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 12px 28px; border-radius: 10px; cursor: pointer;
+    border: none; transition: all 0.25s ease;
   }
+  .next-level-btn.to-lv2 { background: linear-gradient(135deg,#7c3aed,#a855f7); color: white; box-shadow: 0 4px 20px rgba(124,58,237,0.4); }
+  .next-level-btn.to-lv3 { background: linear-gradient(135deg,#d97706,#f59e0b); color: #000; box-shadow: 0 4px 20px rgba(245,158,11,0.4); }
+  .next-level-btn:hover   { transform: translateY(-2px); }
 
+  /* ── CONFETTI ── */
+  .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
   .confetti-piece {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
+    position: absolute; border-radius: 2px;
     animation: confettiFall linear forwards;
   }
-
   @keyframes confettiFall {
-    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
 
-  /* ── WATERMARK ── */
-  .watermark {
-    text-align: center;
-    padding: 10px 0 0;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.78rem;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    opacity: 0.55;
-  }
-
-  .watermark span {
-    color: var(--accent2);
-    font-weight: 600;
-  }
-
-  /* ── RESPONSIVE ── */
   @media (max-width: 600px) {
     .dashboard { grid-template-columns: 1fr; }
-    .items-grid { grid-template-columns: repeat(2, 1fr); }
+    .items-grid { grid-template-columns: repeat(2,1fr); }
     h1 { font-size: 2rem; }
   }
 </style>
@@ -545,179 +409,311 @@
 
 <div class="container">
 
-  <!-- HEADER -->
   <header>
     <div class="title-wrap">
       <h1>Knapsack Quest</h1>
       <div class="title-glow">Knapsack Quest</div>
     </div>
     <p class="subtitle">Dynamic Programming · Shopping Simulation</p>
-    <p class="watermark">Made by <span>Rohit Anish</span> &nbsp;·&nbsp; <span>&</span> &nbsp;·&nbsp; <span>Raghav</span></p>
-    <div class="how-to-play">
-      🎮 You have <strong>25 Points</strong> to spend. Click items to add them to your cart.
-      Your goal: pick the best combination to <strong>maximize Selling Value</strong> within your budget.
-      Hit <strong>Submit</strong> to see if you found the optimal solution!
-    </div>
+    <p class="watermark">Made by <span>Rohit</span> &nbsp;·&nbsp; <span>Anish</span> &nbsp;·&nbsp; <span>Raghav</span></p>
   </header>
 
-  <!-- DASHBOARD -->
+  <!-- LEVEL SELECTOR -->
+  <div class="level-selector">
+    <button class="level-btn active" data-lv="1" onclick="trySwitch(1)">
+      <span class="lv-label">Level 1 · Classic</span>
+      0/1 Knapsack · 25 pts
+    </button>
+    <button class="level-btn locked" data-lv="2" onclick="trySwitch(2)">
+      <span class="lv-label">Level 2 · Harder</span>
+      <span class="lock-icon">🔒</span> 0/1 Knapsack · 30 pts
+    </button>
+    <button class="level-btn locked" data-lv="3" onclick="trySwitch(3)">
+      <span class="lv-label">Level 3 · Expert</span>
+      <span class="lock-icon">🔒</span> Fractional · Greedy · 20 pts
+    </button>
+  </div>
+
+  <div class="how-to-play" id="howToPlay"></div>
+
   <div class="dashboard">
     <div class="stat-card" id="pointsCard">
       <div class="stat-label">⚡ Points Used</div>
       <div class="stat-value" id="pointsUsed">0</div>
-      <div class="stat-sub">out of 25 available</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+      <div class="stat-sub" id="capacityLabel">out of 25 available</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card" id="profitCard">
       <div class="stat-label">💰 Total Potential Profit</div>
-      <div class="stat-value" id="profitValue" style="color: #4ade80;">0</div>
+      <div class="stat-value" id="profitValue" style="color:#4ade80;">0.00</div>
       <div class="stat-sub">selling value of selected items</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="profitFill" style="background: linear-gradient(90deg,#22c55e,#86efac);"></div>
-      </div>
+      <div class="progress-bar"><div class="progress-fill" id="profitFill" style="background:linear-gradient(90deg,#22c55e,#86efac);"></div></div>
     </div>
   </div>
 
-  <!-- ALERT -->
-  <div class="alert-bar" id="alertBar">⚠️ Not enough points! Remove an item first.</div>
+  <div class="alert-bar" id="alertBar"></div>
 
-  <!-- ITEMS -->
-  <div class="section-title">Market Items — Select Your Portfolio</div>
+  <div class="greedy-hint" id="greedyHint">
+    🧠 <strong>Greedy Mode Active!</strong> Items are ranked by <strong>Profit-per-Point ratio</strong>.
+    Select an item, then use the <strong>slider</strong> to choose what fraction to take.
+    The greedy algorithm fills highest ratio first!
+  </div>
+
+  <div class="section-title" id="sectionTitle">Market Items</div>
   <div class="items-grid" id="itemsGrid"></div>
 
-  <!-- ACTIONS -->
   <div class="actions">
-    <button class="btn btn-primary" onclick="submitCart()">▶ Submit &amp; Check Solution</button>
+    <button class="btn btn-primary" id="submitBtn" onclick="submitCart()">▶ Submit &amp; Check Solution</button>
     <button class="btn btn-secondary" onclick="resetCart()">↺ Reset Cart</button>
   </div>
 
-  <!-- RESULT -->
   <div class="result-card" id="resultCard">
     <div class="result-icon" id="resultIcon"></div>
     <div class="result-title" id="resultTitle"></div>
     <p class="result-detail" id="resultDetail"></p>
     <div id="optimalBadge"></div>
+    <div id="nextLevelWrap"></div>
   </div>
 
 </div>
 
+<div class="unlock-toast" id="unlockToast"></div>
 <div class="confetti-wrap" id="confettiWrap"></div>
 
 <script>
-// ─────────────────────────────────────────
-//  ITEMS DATA
-// ─────────────────────────────────────────
-const CAPACITY = 25;
+// ═══════════════════════════════════════════
+//  LEVEL DEFINITIONS
+// ═══════════════════════════════════════════
+const LEVELS = {
+  1: {
+    capacity: 25, algorithm: '01',
+    howToPlay: `🎮 You have <strong>25 Points</strong> to spend. Click items to add them to your cart.
+      Your goal: pick the best combination to <strong>maximize Selling Value</strong> within your budget.
+      Hit <strong>Submit</strong> to see if you found the optimal solution!`,
+    sectionLabel: 'Market Items — Select Your Portfolio',
+    items: [
+      { id:0, name:"Quantum Chip", emoji:"💠", weight:3,  value:8  },
+      { id:1, name:"NanoCore",     emoji:"🔬", weight:6,  value:14 },
+      { id:2, name:"Photon Cell",  emoji:"⚡", weight:2,  value:5  },
+      { id:3, name:"CryptoGem",   emoji:"💎", weight:5,  value:12 },
+      { id:4, name:"Data Vault",   emoji:"🗄️", weight:8,  value:18 },
+      { id:5, name:"Ion Shield",   emoji:"🛡️", weight:4,  value:9  },
+      { id:6, name:"BioSensor",    emoji:"🧬", weight:7,  value:15 },
+      { id:7, name:"StarMap",      emoji:"🌌", weight:1,  value:3  },
+      { id:8, name:"Plasma Core",  emoji:"🔴", weight:9,  value:20 },
+      { id:9, name:"Holo Lens",    emoji:"🥽", weight:6,  value:13 },
+    ]
+  },
+  2: {
+    capacity: 30, algorithm: '01',
+    howToPlay: `🔥 <strong>Level 2 — Harder!</strong> You now have <strong>30 Points</strong> and <strong>12 items</strong>
+      with trickier trade-offs. Beware of high-value items that eat your budget fast.
+      Find the <strong>true optimal</strong> combination!`,
+    sectionLabel: 'Advanced Market — Trickier Trade-offs',
+    items: [
+      { id:0,  name:"Dark Matter",    emoji:"🌑", weight:5,  value:11 },
+      { id:1,  name:"Echo Drone",     emoji:"🚁", weight:8,  value:17 },
+      { id:2,  name:"Void Crystal",   emoji:"🔷", weight:3,  value:6  },
+      { id:3,  name:"Hyper Cell",     emoji:"🔋", weight:6,  value:14 },
+      { id:4,  name:"Nova Shard",     emoji:"💫", weight:2,  value:4  },
+      { id:5,  name:"Titan Core",     emoji:"⚙️", weight:10, value:22 },
+      { id:6,  name:"Flux Capacitor", emoji:"🌀", weight:7,  value:15 },
+      { id:7,  name:"Psi Emitter",    emoji:"📡", weight:4,  value:9  },
+      { id:8,  name:"Aether Stone",   emoji:"🪨", weight:9,  value:19 },
+      { id:9,  name:"Neon Prism",     emoji:"🌈", weight:1,  value:2  },
+      { id:10, name:"Pulse Module",   emoji:"🔌", weight:5,  value:12 },
+      { id:11, name:"Singularity",    emoji:"🕳️", weight:11, value:25 },
+    ]
+  },
+  3: {
+    capacity: 20, algorithm: 'greedy',
+    howToPlay: `🧠 <strong>Level 3 — Fractional Knapsack!</strong> You have <strong>20 Points</strong>.
+      You can take <strong>fractions</strong> of items using the slider after selecting.
+      The <strong>Greedy strategy</strong> sorts by Profit-per-Point ratio and fills from highest to lowest. Can you match it?`,
+    sectionLabel: 'Commodity Market — Fractional Trading',
+    items: [
+      { id:0, name:"Gold Ore",    emoji:"🥇", weight:5,  value:30 },
+      { id:1, name:"Silver Dust", emoji:"🥈", weight:4,  value:20 },
+      { id:2, name:"Crude Oil",   emoji:"🛢️", weight:6,  value:24 },
+      { id:3, name:"Rare Herb",   emoji:"🌿", weight:3,  value:12 },
+      { id:4, name:"Copper Coil", emoji:"🔩", weight:8,  value:28 },
+      { id:5, name:"Silk Thread", emoji:"🧵", weight:2,  value:6  },
+      { id:6, name:"Iron Bar",    emoji:"🪝", weight:7,  value:17 },
+      { id:7, name:"Coal Slab",   emoji:"⬛", weight:9,  value:18 },
+      { id:8, name:"Stone Block", emoji:"🪨", weight:10, value:15 },
+      { id:9, name:"Sand Grain",  emoji:"⏳", weight:6,  value:6  },
+    ]
+  }
+};
 
-const items = [
-  { id: 0, name: "Quantum Chip",  emoji: "💠", weight: 3,  value: 8  },
-  { id: 1, name: "NanoCore",     emoji: "🔬", weight: 6,  value: 14 },
-  { id: 2, name: "Photon Cell",  emoji: "⚡", weight: 2,  value: 5  },
-  { id: 3, name: "CryptoGem",   emoji: "💎", weight: 5,  value: 12 },
-  { id: 4, name: "Data Vault",   emoji: "🗄️", weight: 8,  value: 18 },
-  { id: 5, name: "Ion Shield",   emoji: "🛡️", weight: 4,  value: 9  },
-  { id: 6, name: "BioSensor",    emoji: "🧬", weight: 7,  value: 15 },
-  { id: 7, name: "StarMap",      emoji: "🌌", weight: 1,  value: 3  },
-  { id: 8, name: "Plasma Core",  emoji: "🔴", weight: 9,  value: 20 },
-  { id: 9, name: "Holo Lens",    emoji: "🥽", weight: 6,  value: 13 },
-];
+// ═══════════════════════════════════════════
+//  UNLOCK STATE  (1 = unlocked, 0 = locked)
+// ═══════════════════════════════════════════
+const unlocked = { 1: true, 2: false, 3: false };
 
-// Track selected state
-const selected = new Array(items.length).fill(false);
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+let currentLevel = 1;
+let levelData, items, CAPACITY;
+let selected  = [];
+let fractions = [];
 
-// ─────────────────────────────────────────
-//  KNAPSACK DP ALGORITHM
-// ─────────────────────────────────────────
-/*
-  Standard 0/1 Knapsack using Dynamic Programming.
-  
-  dp[i][w] = max profit using the first i items with capacity w.
-  
-  Recurrence:
-    If item i doesn't fit:  dp[i][w] = dp[i-1][w]
-    If item i fits:         dp[i][w] = max(dp[i-1][w], dp[i-1][w - weight[i]] + value[i])
-  
-  Time:  O(n × W)
-  Space: O(n × W)  — here 10 × 25 = 250 cells
-*/
-function knapsack(items, capacity) {
-  const n = items.length;
-  // Build (n+1) × (capacity+1) table, filled with 0
-  const dp = Array.from({ length: n + 1 }, () => new Array(capacity + 1).fill(0));
+function initState() {
+  levelData = LEVELS[currentLevel];
+  items     = levelData.items;
+  CAPACITY  = levelData.capacity;
+  selected  = new Array(items.length).fill(false);
+  fractions = new Array(items.length).fill(1.0);
+}
 
+// ═══════════════════════════════════════════
+//  ALGORITHMS
+// ═══════════════════════════════════════════
+
+// 0/1 Knapsack — Dynamic Programming
+// dp[i][w] = max profit using first i items within budget w
+function knapsack01(itemList, capacity) {
+  const n  = itemList.length;
+  const dp = Array.from({ length: n+1 }, () => new Array(capacity+1).fill(0));
   for (let i = 1; i <= n; i++) {
-    const { weight, value } = items[i - 1];
+    const { weight, value } = itemList[i-1];
     for (let w = 0; w <= capacity; w++) {
-      // Option A: skip item i
-      dp[i][w] = dp[i - 1][w];
-      // Option B: take item i (only if it fits)
+      dp[i][w] = dp[i-1][w];
       if (weight <= w) {
-        const withItem = dp[i - 1][w - weight] + value;
-        if (withItem > dp[i][w]) dp[i][w] = withItem;
+        const take = dp[i-1][w - weight] + value;
+        if (take > dp[i][w]) dp[i][w] = take;
       }
     }
   }
-
-  // Maximum profit is at dp[n][capacity]
   return dp[n][capacity];
 }
 
-// ─────────────────────────────────────────
-//  DOM RENDERING
-// ─────────────────────────────────────────
+// Fractional Knapsack — Greedy
+// Sort by value/weight ratio, take greedily
+function greedyFractional(itemList, capacity) {
+  const sorted = [...itemList].sort((a,b) => (b.value/b.weight) - (a.value/a.weight));
+  let remaining = capacity, total = 0;
+  for (const item of sorted) {
+    if (remaining <= 0) break;
+    const take = Math.min(item.weight, remaining);
+    total     += (take / item.weight) * item.value;
+    remaining -= take;
+  }
+  return total;
+}
+
+// ═══════════════════════════════════════════
+//  USER SCORE
+// ═══════════════════════════════════════════
+function getUserWeight() {
+  return items.reduce((s, it) => s + (selected[it.id]
+    ? (levelData.algorithm === 'greedy' ? fractions[it.id] * it.weight : it.weight)
+    : 0), 0);
+}
+
+function getUserProfit() {
+  return items.reduce((s, it) => s + (selected[it.id]
+    ? (levelData.algorithm === 'greedy' ? fractions[it.id] * it.value : it.value)
+    : 0), 0);
+}
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
 function renderGrid() {
-  const grid = document.getElementById('itemsGrid');
+  const grid     = document.getElementById('itemsGrid');
+  const isGreedy = levelData.algorithm === 'greedy';
+  const cls      = `lv${currentLevel}h`;
   grid.innerHTML = '';
+
   items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'item-card' + (selected[item.id] ? ' selected' : '');
-    card.id = `card-${item.id}`;
+    const card    = document.createElement('div');
+    card.className = `item-card ${cls}` + (selected[item.id] ? ' selected' : '');
+    card.id       = `card-${item.id}`;
+
+    const ratio    = (item.value / item.weight).toFixed(2);
+    const fracPct  = Math.round(fractions[item.id] * 100);
+
+    const ratioHTML = isGreedy
+      ? `<div class="stat-badge ratio"><span class="label">Ratio</span><span class="val">${ratio}</span></div>`
+      : '';
+
+    const sliderHTML = isGreedy ? `
+      <div class="fraction-wrap ${selected[item.id] ? 'visible' : ''}" id="fw-${item.id}"
+        onclick="event.stopPropagation()"
+        onmousedown="event.stopPropagation()"
+        ontouchstart="event.stopPropagation()">
+        <input type="range" min="1" max="100" value="${fracPct}"
+          id="slider-${item.id}"
+          oninput="updateFraction(${item.id}, this.value)">
+        <div class="fraction-label">
+          <span>Fraction taken</span>
+          <span class="frac-val" id="frac-label-${item.id}">${fracPct}%</span>
+        </div>
+      </div>` : '';
+
     card.innerHTML = `
       <span class="item-emoji">${item.emoji}</span>
       <div class="item-name">${item.name}</div>
       <div class="item-stats">
-        <div class="stat-badge cost">
-          <span class="label">Buy</span>
-          <span class="val">${item.weight}</span>
-        </div>
-        <div class="stat-badge profit">
-          <span class="label">Sell</span>
-          <span class="val">${item.value}</span>
-        </div>
+        <div class="stat-badge cost"><span class="label">Buy</span><span class="val">${item.weight}</span></div>
+        <div class="stat-badge profit"><span class="label">Sell</span><span class="val">${item.value}</span></div>
+        ${ratioHTML}
       </div>
+      ${sliderHTML}
       <div class="selected-tag">✓ IN CART</div>
     `;
-    card.addEventListener('click', () => toggleItem(item.id));
+
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.fraction-wrap')) return;
+      toggleItem(item.id);
+    });
     grid.appendChild(card);
   });
+
   updateDisabledState();
 }
 
+function updateFraction(id, val) {
+  fractions[id] = val / 100;
+  document.getElementById(`frac-label-${id}`).textContent = val + '%';
+  updateDashboard();
+  hideResult();
+}
+
 function updateDashboard() {
-  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
-  const totalProfit = items.reduce((s, it) => s + (selected[it.id] ? it.value : 0), 0);
-  const maxProfit   = items.reduce((s, it) => s + it.value, 0); // for bar scaling
+  const totalWeight  = getUserWeight();
+  const totalProfit  = getUserProfit();
+  const maxAllProfit = items.reduce((s, it) => s + it.value, 0);
+  const isGreedy     = levelData.algorithm === 'greedy';
 
-  document.getElementById('pointsUsed').textContent = totalWeight;
-  document.getElementById('profitValue').textContent = totalProfit;
+  document.getElementById('pointsUsed').textContent   = isGreedy ? totalWeight.toFixed(1) : Math.round(totalWeight);
+  document.getElementById('profitValue').textContent   = totalProfit.toFixed(2);
+  document.getElementById('capacityLabel').textContent = `out of ${CAPACITY} available`;
 
-  const pct = Math.min(100, (totalWeight / CAPACITY) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
+  const pct  = Math.min(100, (totalWeight / CAPACITY) * 100);
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className   = 'progress-fill' + (pct >= 100 ? ' danger' : currentLevel === 2 ? ' lv2fill' : currentLevel === 3 ? ' lv3fill' : '');
 
-  const card = document.getElementById('pointsCard');
-  const fill  = document.getElementById('progressFill');
-  if (pct >= 100) { card.classList.add('danger'); fill.classList.add('danger'); }
-  else if (pct >= 75) { card.classList.add('warning'); card.classList.remove('danger'); fill.classList.remove('danger'); }
-  else { card.classList.remove('danger', 'warning'); fill.classList.remove('danger'); }
+  const pc = document.getElementById('pointsCard');
+  if (pct >= 100)     { pc.classList.add('danger'); pc.classList.remove('warning'); }
+  else if (pct >= 75) { pc.classList.add('warning'); pc.classList.remove('danger'); }
+  else                { pc.classList.remove('danger','warning'); }
 
-  const profitPct = Math.min(100, (totalProfit / maxProfit) * 100);
-  document.getElementById('profitFill').style.width = profitPct + '%';
+  document.getElementById('profitFill').style.width = Math.min(100, (totalProfit / maxAllProfit) * 100) + '%';
+
+  ['pointsCard','profitCard'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('lv2','lv3');
+    if (currentLevel === 2) el.classList.add('lv2');
+    if (currentLevel === 3) el.classList.add('lv3');
+  });
 }
 
 function updateDisabledState() {
-  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
+  const totalWeight = getUserWeight();
   items.forEach(item => {
     const card = document.getElementById(`card-${item.id}`);
     if (!selected[item.id] && totalWeight + item.weight > CAPACITY) {
@@ -728,22 +724,25 @@ function updateDisabledState() {
   });
 }
 
-// ─────────────────────────────────────────
+// ═══════════════════════════════════════════
 //  INTERACTION
-// ─────────────────────────────────────────
+// ═══════════════════════════════════════════
 function toggleItem(id) {
   hideResult();
-  const totalWeight = items.reduce((s, it) => s + (selected[it.id] ? it.weight : 0), 0);
-  const item = items[id];
+  const totalWeight = getUserWeight();
+  const item        = items[id];
+  const isGreedy    = levelData.algorithm === 'greedy';
 
   if (selected[id]) {
-    // Remove
     selected[id] = false;
     document.getElementById(`card-${id}`).classList.remove('selected');
+    if (isGreedy) {
+      const fw = document.getElementById(`fw-${id}`);
+      if (fw) fw.classList.remove('visible');
+    }
   } else {
-    // Check capacity
-    if (totalWeight + item.weight > CAPACITY) {
-      showAlert();
+    if (!isGreedy && totalWeight + item.weight > CAPACITY) {
+      triggerAlert('⚠️ Not enough points! Remove an item first.');
       const card = document.getElementById(`card-${id}`);
       card.classList.add('shake');
       setTimeout(() => card.classList.remove('shake'), 400);
@@ -751,6 +750,10 @@ function toggleItem(id) {
     }
     selected[id] = true;
     document.getElementById(`card-${id}`).classList.add('selected');
+    if (isGreedy) {
+      const fw = document.getElementById(`fw-${id}`);
+      if (fw) fw.classList.add('visible');
+    }
   }
 
   updateDashboard();
@@ -759,17 +762,14 @@ function toggleItem(id) {
 }
 
 let alertTimer;
-function showAlert() {
+function triggerAlert(msg) {
   const bar = document.getElementById('alertBar');
+  bar.textContent = msg;
   bar.classList.add('show');
   clearTimeout(alertTimer);
   alertTimer = setTimeout(hideAlert, 2800);
 }
-
-function hideAlert() {
-  document.getElementById('alertBar').classList.remove('show');
-}
-
+function hideAlert()  { document.getElementById('alertBar').classList.remove('show'); }
 function hideResult() {
   const r = document.getElementById('resultCard');
   r.className = 'result-card';
@@ -778,88 +778,175 @@ function hideResult() {
 
 function resetCart() {
   selected.fill(false);
+  fractions.fill(1.0);
   hideResult();
   hideAlert();
   renderGrid();
   updateDashboard();
 }
 
-// ─────────────────────────────────────────
-//  SUBMIT & EVALUATE
-// ─────────────────────────────────────────
-function submitCart() {
-  const userProfit = items.reduce((s, it) => s + (selected[it.id] ? it.value : 0), 0);
+// ═══════════════════════════════════════════
+//  LEVEL SWITCHING WITH LOCK GATE
+// ═══════════════════════════════════════════
+function trySwitch(lv) {
+  if (!unlocked[lv]) {
+    const prev = lv - 1;
+    showToast(`🔒 Complete Level ${prev} first to unlock this!`);
+    const btn = document.querySelector(`.level-btn[data-lv="${lv}"]`);
+    btn.classList.add('shake');
+    setTimeout(() => btn.classList.remove('shake'), 400);
+    return;
+  }
+  switchLevel(lv);
+}
 
-  if (userProfit === 0) {
-    showAlert();
-    document.getElementById('alertBar').textContent = '🛒 Select at least one item first!';
-    document.getElementById('alertBar').classList.add('show');
-    clearTimeout(alertTimer);
-    alertTimer = setTimeout(hideAlert, 2800);
+function switchLevel(lv) {
+  currentLevel = lv;
+
+  document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.level-btn[data-lv="${lv}"]`).classList.add('active');
+
+  const sb = document.getElementById('submitBtn');
+  sb.className = 'btn btn-primary' + (lv === 2 ? ' lv2style' : lv === 3 ? ' lv3style' : '');
+
+  document.getElementById('howToPlay').innerHTML      = LEVELS[lv].howToPlay;
+  document.getElementById('sectionTitle').textContent = LEVELS[lv].sectionLabel;
+
+  const hint = document.getElementById('greedyHint');
+  hint.className = 'greedy-hint' + (lv === 3 ? ' visible' : '');
+
+  initState();
+  hideResult();
+  hideAlert();
+  renderGrid();
+  updateDashboard();
+}
+
+// Called after solving a level optimally — unlocks the next level button
+function unlockNextLevel(completedLv) {
+  const next = completedLv + 1;
+  if (!LEVELS[next] || unlocked[next]) return;
+
+  unlocked[next] = true;
+
+  const btn = document.querySelector(`.level-btn[data-lv="${next}"]`);
+  btn.classList.remove('locked');
+
+  // Remove lock icon from button text
+  const lockSpan = btn.querySelector('.lock-icon');
+  if (lockSpan) lockSpan.remove();
+
+  // Pop animation
+  btn.classList.add('just-unlocked');
+  setTimeout(() => btn.classList.remove('just-unlocked'), 600);
+
+  const labels = { 2: 'Level 2 Unlocked!', 3: 'Level 3 Unlocked!' };
+  showToast('🔓 ' + labels[next]);
+}
+
+// ═══════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('unlockToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════
+function submitCart() {
+  const userWeight = getUserWeight();
+  const userProfit = getUserProfit();
+  const isGreedy   = levelData.algorithm === 'greedy';
+
+  if (userProfit < 0.01) {
+    triggerAlert('🛒 Select at least one item first!');
+    return;
+  }
+  if (userWeight > CAPACITY + 0.001) {
+    triggerAlert('⚠️ You exceeded the point limit!');
     return;
   }
 
-  const maxProfit = knapsack(items, CAPACITY);
+  const maxProfit = isGreedy ? greedyFractional(items, CAPACITY) : knapsack01(items, CAPACITY);
+  const algoLabel = isGreedy ? 'Greedy Maximum' : 'DP Maximum';
+  const tolerance = isGreedy ? 0.05 : 0;
+  const isOptimal = Math.abs(userProfit - maxProfit) <= tolerance;
+
   const resultCard = document.getElementById('resultCard');
 
-  if (userProfit === maxProfit) {
+  if (isOptimal) {
     resultCard.className = 'result-card optimal';
     resultCard.style.display = 'block';
-    document.getElementById('resultIcon').textContent = '🎉';
+    document.getElementById('resultIcon').textContent  = '🎉';
     document.getElementById('resultTitle').textContent = 'You hit the Jackpot!';
-    document.getElementById('resultDetail').innerHTML =
-      `You found the <span>optimal combination</span>! Your selling value of <span>${userProfit} pts</span> matches the algorithmic maximum.`;
-    document.getElementById('optimalBadge').innerHTML =
-      `<div class="optimal-badge">✦ Perfect Score · DP Maximum = ${maxProfit} pts</div>`;
+    document.getElementById('resultDetail').innerHTML  =
+      `You found the <span>optimal combination</span>! Your profit of <span>${userProfit.toFixed(2)} pts</span> matches the algorithmic maximum.`;
+    document.getElementById('optimalBadge').innerHTML  =
+      `<div class="optimal-badge">✦ Perfect Score · ${algoLabel} = ${maxProfit.toFixed(2)} pts</div>`;
+
+    // Unlock next level and show button
+    unlockNextLevel(currentLevel);
+
+    const nextLv = currentLevel + 1;
+    const wrap   = document.getElementById('nextLevelWrap');
+    if (LEVELS[nextLv]) {
+      const btnClass = nextLv === 2 ? 'to-lv2' : 'to-lv3';
+      wrap.innerHTML = `<button class="next-level-btn ${btnClass}" onclick="switchLevel(${nextLv})">
+        ▶ Go to Level ${nextLv}
+      </button>`;
+    } else {
+      wrap.innerHTML = `<p style="margin-top:14px;color:#34d399;font-family:'Orbitron',monospace;font-size:0.8rem;letter-spacing:2px;">🏆 ALL LEVELS COMPLETE!</p>`;
+    }
+
     spawnConfetti();
   } else {
     resultCard.className = 'result-card sub-optimal';
     resultCard.style.display = 'block';
-    document.getElementById('resultIcon').textContent = '🔍';
+    document.getElementById('resultIcon').textContent  = '🔍';
     document.getElementById('resultTitle').textContent = 'You Can Do Better!';
-    document.getElementById('resultDetail').innerHTML =
-      `Your profit: <span>${userProfit} pts</span> &nbsp;|&nbsp; Maximum possible: <span>${maxProfit} pts</span><br>
-      You're <span>${maxProfit - userProfit} pts</span> away from the optimal solution. Keep rearranging!`;
-    document.getElementById('optimalBadge').innerHTML = '';
+    document.getElementById('resultDetail').innerHTML  =
+      `Your profit: <span>${userProfit.toFixed(2)} pts</span> &nbsp;|&nbsp; Maximum possible: <span>${maxProfit.toFixed(2)} pts</span><br>
+       You're <span>${(maxProfit - userProfit).toFixed(2)} pts</span> away from optimal. Keep adjusting!`;
+    document.getElementById('optimalBadge').innerHTML  = '';
+    document.getElementById('nextLevelWrap').innerHTML = '';
   }
 }
 
-// ─────────────────────────────────────────
+// ═══════════════════════════════════════════
 //  CONFETTI
-// ─────────────────────────────────────────
+// ═══════════════════════════════════════════
 const CONFETTI_COLORS = ['#3b82f6','#06b6d4','#8b5cf6','#22c55e','#f59e0b','#f87171','#e879f9'];
 
 function spawnConfetti() {
   const wrap = document.getElementById('confettiWrap');
   wrap.innerHTML = '';
   for (let i = 0; i < 90; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    const x = Math.random() * 100;
-    const delay = Math.random() * 1.2;
-    const duration = 2 + Math.random() * 2;
-    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    const p    = document.createElement('div');
     const size = 6 + Math.random() * 8;
-    piece.style.cssText = `
-      left: ${x}vw;
-      top: -${size}px;
-      width: ${size}px;
-      height: ${size}px;
-      background: ${color};
-      animation-delay: ${delay}s;
-      animation-duration: ${duration}s;
-      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    p.className = 'confetti-piece';
+    p.style.cssText = `
+      left:${Math.random()*100}vw; top:-${size}px;
+      width:${size}px; height:${size}px;
+      background:${CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)]};
+      animation-delay:${Math.random()*1.2}s;
+      animation-duration:${2+Math.random()*2}s;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
     `;
-    wrap.appendChild(piece);
+    wrap.appendChild(p);
   }
   setTimeout(() => wrap.innerHTML = '', 4000);
 }
 
-// ─────────────────────────────────────────
+// ═══════════════════════════════════════════
 //  INIT
-// ─────────────────────────────────────────
-renderGrid();
-updateDashboard();
+// ═══════════════════════════════════════════
+switchLevel(1);
 </script>
 
 </body>
